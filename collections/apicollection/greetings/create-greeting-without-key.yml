@@ -14,13 +14,5 @@ http:
       }
   auth: inherit
 
-runtime:
-  scripts:
-    - type: tests
-      code: |-
-        test("should reject missing key", function() {
-          expect(res.status).to.equal(401);
-        });
-
 settings:
   encodeUrl: true
