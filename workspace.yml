@@ -1,0 +1,8 @@
+opencollection: 1.0.0
+info:
+  name: "api-collections"
+  type: workspace
+
+collections:
+  - name: "apicollection"
+    path: "collections/apicollection"

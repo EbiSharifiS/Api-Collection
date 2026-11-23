@@ -1,0 +1,14 @@
+name: local
+variables:
+  - name: baseUrl
+    value: http://localhost:8080
+    enabled: true
+    secret: false
+    type: text
+    description: Local Spring Boot server
+  - name: apiKey
+    value: "{{process.env.API_KEY}}"
+    enabled: true
+    secret: false
+    type: text
+    description: Read from collection .env (gitignored)

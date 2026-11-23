@@ -1,0 +1,5 @@
+# Bruno: real secrets stay local
+.env
+
+# IDE
+.idea/
