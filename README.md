@@ -57,6 +57,41 @@ pre-commit run gitleaks
 - Upgrade gitleaks with `pre-commit autoupdate` and commit the updated `.pre-commit-config.yaml`. Teammates get the new version on their next commit. `pre-commit gc` removes old cached versions.
 - The hook can be skipped with `git commit --no-verify`. Don't do that to get a secret past it.
 
+## Contributing: protected `main` and GitHub-side checks
+
+`main` is protected by a branch ruleset. Direct pushes to `main` are rejected, so every change goes through a pull request.
+
+### Workflow
+
+```bash
+git switch -c <short-description>      # work on a branch
+git add <files> && git commit          # pre-commit runs gitleaks
+git push -u origin <short-description> # open a PR from the link git prints
+```
+
+A PR can be merged into `main` only when:
+- the repo owner has approved it (`.github/CODEOWNERS` assigns every file to the owner)
+- the approval is still current (new commits dismiss earlier approvals)
+- the `gitleaks` check passes
+
+Force pushes to `main` and deleting `main` are blocked.
+
+### Secret scanning on GitHub
+
+| Layer | When | Effect |
+|---|---|---|
+| Push protection (GitHub secret scanning) | During `git push` | Rejects pushes containing known token formats |
+| `gitleaks` workflow (`.github/workflows/gitleaks.yml`) | After every push to any branch | Fails the run and emails the owner. The push is already on GitHub at this point. |
+| `gitleaks` required check | On every PR to `main` | Blocks the merge until the leak is removed |
+
+Every commit in a push or PR is scanned, not only the latest one. Removing a secret in a later commit does **not** make the check pass, and the secret stays in history.
+
+### If gitleaks or push protection flags your change
+
+1. **Rotate the secret immediately.** Once pushed, it's public, even on a branch that never merges.
+2. Replace the literal value with a `{{variable}}` and put the real value in `.env`.
+3. Ask the repo owner how to clean up the branch history before opening or updating the PR.
+
 ## Adding a collection
 
 1. Create `collections/<project-name>/` with `opencollection.yml`, `environments/` and `.env.example`.
